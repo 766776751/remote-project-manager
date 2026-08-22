@@ -177,6 +177,7 @@ body {
 .remote-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    align-items: stretch;   /* 同一行的卡片按内容最多者等高对齐（协调） */
     gap: 16px;
 }
 
@@ -185,9 +186,9 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
-    min-height: 280px;
+    min-height: 0;          /* 高度完全由内容决定，不再强制 280px */
     height: auto;
-    overflow: hidden;
+    /* 注意：不放 overflow:hidden，长内容（rcs/备注）永不裁切 */
     transition: box-shadow 0.15s;
 }
 
