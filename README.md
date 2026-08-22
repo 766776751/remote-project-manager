@@ -123,29 +123,38 @@ remote-project-manager/
 > `node-runtime/`（自动下载的 Node 运行环境）、`remote-project-manager-data/`（活动数据库），
 > 这些均已被 `.gitignore` 排除，不会进入仓库。
 
-## 部署到 Vercel（在线访问）
+## 部署到 Vercel（公网只读展示）
 
-项目已适配 Vercel Serverless Functions，可直接部署获得公网访问地址。
+> **设计思路**：Vercel 的 Serverless 文件系统是临时的，后端 SQLite 数据无法持久化。
+> 因此本项目采用 **「本地录入 + 烘焙快照 + 静态托管」** 方案：
+> 1. 在**本机**用 `start.bat` 正常录入、管理数据（后端 + SQLite 持久化都在本地）；
+> 2. 需要对外展示时，运行 `npm run publish`，把当前数据导出成 `static/data.js`；
+> 3. 推送到 GitHub，Vercel 重新部署后即为一个**只读展示站**——数据快照嵌在前端，
+>    不依赖后端、不丢数据，编辑/删除/新增按钮自动隐藏。
 
-> ⚠️ **重要限制**：Vercel 的无服务器函数文件系统是临时的，SQLite 数据库只能写在 `/tmp` 里。这意味着新增 / 修改的数据在**重新部署或冷启动后会被清空**，仅适合演示或只读场景。如果需要真正持久化，请改用 Vercel Postgres / Neon / Supabase 等外部数据库。
+### 本地录入 → 发布流程
 
-### 部署步骤
+```bash
+# 1) 本机双击 start.bat 录入数据（日常使用）
 
-1. 注册 / 登录 [Vercel](https://vercel.com)，进入 Dashboard；
-2. 点击 **Add New Project**，选择 `766776751/remote-project-manager` 仓库导入；
-3. 在 **Environment Variables** 中至少添加一项（如需使用地图搜索）：
-   - `AMAP_KEY` = 你的高德 Key
-   - `AMAP_SECURITY_JS_CODE` = 你的高德安全密钥（JS API 需要同时配置两项）
-4. 保持默认构建命令 `npm run build` 与输出目录 `public` 不变；
-5. 点击 **Deploy**。
+# 2) 数据准备好后，导出快照
+npm run publish          # 等价于 node scripts/publish.js
+#    → 生成 static/data.js（window.__APP_DATA__ = {...}）
 
-Vercel 会自动识别：
-- `package.json` 中 `"engines": { "node": "24.x" }` 使用 Node.js 24 运行时（原生支持 `node:sqlite`）；
-- `npm run build` 会把 `static/` 复制到 `public/` 作为静态站点；
-- `vercel.json` 会把所有 `/api/*` 请求转发到 `api/index.js`；
-- API 函数（`api/index.js`）复用 `lib/server.js` 中的路由与数据库逻辑。
+# 3) 提交并推送，触发 Vercel 重新部署
+git add -A
+git commit -m "更新展示数据"
+git push
+```
 
-如果部署后首页正常但 API 报错 500，请在 Vercel Dashboard → 你的项目 → **Logs** → **Functions** 里查看具体错误信息。
+### Vercel 项目配置（首次）
+
+1. 注册 / 登录 [Vercel](https://vercel.com)，**Add New Project** 导入 `766776751/remote-project-manager`；
+2. 构建命令保持 `npm run build`，输出目录 `public`（均由 `vercel.json` 指定）；
+3. 点击 **Deploy**。之后每次 `git push` 都会自动重新部署。
+
+> 部署到 Vercel 的站点**不连接后端数据库**，也不含高德密钥（只读展示无需地图编辑）。
+> 本地（`localhost`）访问时前端会自动忽略 `data.js`、改走后端接口，保持可写。
 
 ## 从 GitHub 部署 / 克隆运行
 

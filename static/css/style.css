@@ -626,3 +626,8 @@ body {
     .combined-layout { flex-direction: column; }
     .remote-panel { position: static; max-height: none; flex-basis: auto; max-width: 100%; }
 }
+
+/* 只读展示模式：部署到 Vercel 后隐藏所有写入操作 */
+body.readonly .ro-hide { display: none !important; }
+body.readonly .btn-edit-customer { display: none !important; }
+body.readonly .rc-thumb { display: none !important; }

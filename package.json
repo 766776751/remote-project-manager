@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node lib/server.js",
-    "build": "node scripts/vercel-build.js"
+    "build": "node scripts/vercel-build.js",
+    "publish": "node scripts/publish.js"
   }
 }

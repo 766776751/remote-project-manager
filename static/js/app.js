@@ -11,6 +11,11 @@ let selectedCustomerId = null;
 
 const API_BASE = '';
 
+// 只读展示模式：当页面加载了烘焙数据（window.__APP_DATA__）且不在本机（localhost）时进入。
+// 此时直接读取快照、不调用后端接口、隐藏所有写入操作。
+const STATIC_MODE = !!window.__APP_DATA__ &&
+    !['localhost', '127.0.0.1', ''].includes(location.hostname);
+
 // ---------- 工具函数 ----------
 
 function $(id) { return document.getElementById(id); }
@@ -78,6 +83,14 @@ function showPage(page) {
 }
 
 async function loadHomeData() {
+    if (STATIC_MODE) {
+        const d = window.__APP_DATA__;
+        customers = d.customers || [];
+        projects = d.projects || [];
+        populateCustomerFilters();
+        renderHomeCards();
+        return;
+    }
     try {
         const [c, p] = await Promise.all([
             api('/api/customers'),
@@ -93,6 +106,15 @@ async function loadHomeData() {
 }
 
 async function loadManageData() {
+    if (STATIC_MODE) {
+        const d = window.__APP_DATA__;
+        customers = d.customers || [];
+        projects = d.projects || [];
+        populateCustomerSelect();
+        renderCustomerList();
+        renderProjectTable();
+        return;
+    }
     try {
         const [c, p] = await Promise.all([
             api('/api/customers'),
@@ -149,20 +171,19 @@ function renderHomeCards() {
             : '';
         const upActive = p.remote_status === 'available' ? ' active' : '';
         const downActive = p.remote_status === 'unavailable' ? ' active' : '';
+        const feedbackHtml = STATIC_MODE
+            ? statusBadge(p.remote_status)
+            : `<div class="rc-feedback">
+                   <button class="rc-thumb rc-thumb-up${upActive}" onclick="feedbackProject(${p.id}, 'like')" title="标记可用"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button>
+                   <button class="rc-thumb rc-thumb-down${downActive}" onclick="feedbackProject(${p.id}, 'dislike')" title="标记不可用"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 12h4V3h-4v12z"/></svg></button>
+               </div>
+               ${statusBadge(p.remote_status)}`;
         return `
         <div class="remote-card">
             <div class="rc-head">
                 <span class="rc-customer">${cust?.name || '未知客户'}</span>
                 <div class="rc-status-col">
-                    <div class="rc-feedback">
-                        <button class="rc-thumb rc-thumb-up${upActive}" onclick="feedbackProject(${p.id}, 'like')" title="标记可用">
-                            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
-                        </button>
-                        <button class="rc-thumb rc-thumb-down${downActive}" onclick="feedbackProject(${p.id}, 'dislike')" title="标记不可用">
-                            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 12h4V3h-4v12z"/></svg>
-                        </button>
-                    </div>
-                    ${statusBadge(p.remote_status)}
+                    ${feedbackHtml}
                 </div>
             </div>
             <div class="rc-project">${p.name} <span class="rc-code">${p.code || ''}</span></div>
@@ -180,7 +201,7 @@ function renderHomeCards() {
             ${rcs ? `<div class="rc-line rc-link-line">${rcs}</div>` : ''}
             ${p.note ? `<div class="rc-line"><span class="rc-label">备注</span><span class="rc-val note">${p.note}</span></div>` : ''}
             <div class="rc-foot">
-                <button class="btn btn-sm" onclick="editProject(${p.id})">编辑</button>
+                ${STATIC_MODE ? '' : `<button class="btn btn-sm" onclick="editProject(${p.id})">编辑</button>`}
                 <button class="btn btn-sm btn-primary" onclick="copyCardInfo(${p.id})">复制全部信息</button>
             </div>
         </div>`;
@@ -249,7 +270,7 @@ function renderCustomerList(filter = '') {
         const projCount = projects.filter(p => p.customer_id === c.id).length;
         const region = [c.province, c.city, c.district].filter(Boolean).join(' ');
         const active = (c.id === selectedCustomerId) ? ' active' : '';
-        const maintainBtn = active ? `
+        const maintainBtn = (active && !STATIC_MODE) ? `
             <button class="btn-edit-customer" title="地址调整" onclick="event.stopPropagation(); openCustomerModal(${c.id})">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 <span>地址调整</span>
@@ -361,11 +382,11 @@ function renderProjectTable(filter = '') {
             <td class="remote-cell">${remoteCell}${p.remote_password ? `<br><span class="mono pw">${p.remote_password}</span>` : ''}</td>
             <td>${statusBadge(p.remote_status)}</td>
             <td class="actions">
-                <button class="btn btn-sm" onclick="editProject(${p.id})">编辑</button>
-                ${p.supports_remote ? `
+                ${STATIC_MODE ? '' : `<button class="btn btn-sm" onclick="editProject(${p.id})">编辑</button>`}
+                ${STATIC_MODE || !p.supports_remote ? '' : `
                     <button class="btn btn-sm btn-success" onclick="feedbackProject(${p.id}, 'like')" title="可用">✓</button>
                     <button class="btn btn-sm btn-danger" onclick="feedbackProject(${p.id}, 'dislike')" title="不可用">✗</button>
-                ` : ''}
+                `}
             </td>
         </tr>`;
     }).join('');
@@ -374,6 +395,7 @@ function renderProjectTable(filter = '') {
 // ---------- 客户弹窗 ----------
 
 function openCustomerModal(id) {
+    if (STATIC_MODE) return;
     if (id) {
         const c = customers.find(x => x.id === id);
         if (!c) return;
@@ -429,6 +451,7 @@ async function saveCustomer(e) {
 // ---------- 项目弹窗 ----------
 
 function openProjectModal() {
+    if (STATIC_MODE) return;
     $('project-id').value = '';
     $('project-form').reset();
     $('project-supports-remote').value = '0';
@@ -531,6 +554,22 @@ async function feedbackProject(id, type) {
 }
 
 async function loadProjectHistory(id) {
+    if (STATIC_MODE) {
+        const el = $('project-history-list');
+        const rows = (window.__APP_DATA__.histories && window.__APP_DATA__.histories[id]) || [];
+        if (!rows.length) {
+            el.innerHTML = '<div style="color:var(--muted);font-size:12px;">暂无历史记录</div>';
+            return;
+        }
+        el.innerHTML = rows.slice(0, 10).map(h => `
+            <div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
+                <span style="color:var(--muted);">${formatDate(h.created_at)}</span>
+                <span style="margin-left:8px;">${actionText(h.action)}</span>
+                ${h.note ? `<span style="margin-left:8px;color:var(--text-secondary);">${h.note}</span>` : ''}
+            </div>
+        `).join('');
+        return;
+    }
     try {
         const rows = await api(`/api/projects/${id}/history`);
         const el = $('project-history-list');
@@ -625,6 +664,15 @@ function setAddressFromPoi(poi) {
 // ---------- 初始化 ----------
 
 async function init() {
+    if (STATIC_MODE) {
+        document.body.classList.add('readonly');
+        const d = window.__APP_DATA__;
+        customers = d.customers || [];
+        projects = d.projects || [];
+        showPage('home');
+        showToast('当前为只读展示模式（数据快照，无法修改）', 'info');
+        return;
+    }
     try {
         const cfg = await api('/api/config');
         amapKey = cfg.amap_key || '';

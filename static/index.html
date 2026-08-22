@@ -44,8 +44,8 @@
                         <div class="section-title title-gray">
                             <h3>客户管理</h3>
                             <div class="title-actions">
-                                <button class="btn-title-action" onclick="exportBackup()">导出</button>
-                                <button class="btn-title-action" onclick="document.getElementById('backup-file').click()">导入</button>
+                                <button class="btn-title-action ro-hide" onclick="exportBackup()">导出</button>
+                                <button class="btn-title-action ro-hide" onclick="document.getElementById('backup-file').click()">导入</button>
                                 <button class="btn-title-action" onclick="showAllProjects()">显示所有项目</button>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                             <div class="manage-panel customers-panel">
                                 <div class="panel-header">
                                     <h3>客户地址</h3>
-                                    <button class="btn btn-sm btn-primary" onclick="openCustomerModal()">+ 新增</button>
+                                    <button class="btn btn-sm btn-primary ro-hide" onclick="openCustomerModal()">+ 新增</button>
                                 </div>
                                 <div class="search-box">
                                     <input type="text" id="customer-search" placeholder="搜索客户..." oninput="filterCustomers()">
@@ -67,7 +67,7 @@
                             <div class="manage-panel projects-panel">
                                 <div class="panel-header">
                                     <h3>关联项目</h3>
-                                    <button class="btn btn-sm btn-primary" onclick="openProjectModal()">+ 新增</button>
+                                    <button class="btn btn-sm btn-primary ro-hide" onclick="openProjectModal()">+ 新增</button>
                                 </div>
                                 <div class="search-box">
                                     <input type="text" id="project-search" placeholder="搜索项目..." oninput="filterProjects()">
@@ -224,6 +224,8 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+    <!-- 烘焙数据：本地（localhost）运行时被忽略，部署到 Vercel 后作为只读快照 -->
+    <script src="/data.js"></script>
     <script src="/js/app.js"></script>
 </body>
 </html>
