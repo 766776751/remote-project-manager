@@ -177,8 +177,7 @@ body {
 .remote-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-auto-rows: minmax(auto, 1fr); /* 每行高度统一取该行内容最高者 */
-    align-items: stretch;              /* 卡片在所在行内纵向撑满 */
+    align-items: stretch;   /* 同一行的卡片按内容最多者等高对齐（协调） */
     gap: 16px;
 }
 
@@ -187,10 +186,9 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
-    min-height: 0;          /* 高度完全由内容决定，不再强制 280px */
-    height: auto;
+    height: auto;           /* 高度随内容；grid 拉伸使其与同行最高卡片等高 */
     display: flex;
-    flex-direction: column; /* 让底部按钮区可以用 margin-top:auto 贴底 */
+    flex-direction: column; /* 底部按钮区用 margin-top:auto 贴底对齐 */
     transition: box-shadow 0.15s;
 }
 
