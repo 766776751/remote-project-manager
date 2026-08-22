@@ -292,6 +292,15 @@ body {
     display: flex;
     gap: 8px;
     justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.rc-foot .btn-sm {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* 管理页双栏布局 */
@@ -601,6 +610,77 @@ body {
     padding: 40px;
     color: var(--muted);
     font-size: 14px;
+}
+
+/* 访问密码弹窗 */
+.pwd-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.pwd-modal.hidden {
+    display: none;
+}
+
+.pwd-modal-box {
+    background: #fff;
+    padding: 28px 32px;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+    width: 340px;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.pwd-modal-box h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: var(--text);
+}
+
+.pwd-modal-box p {
+    margin: 0 0 18px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.pwd-modal-box input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.pwd-modal-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+.pwd-modal-box .btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+}
+
+.pwd-error {
+    color: #dc2626;
+    font-size: 13px;
+    min-height: 20px;
+    margin-bottom: 8px;
+}
+
+.app-hidden {
+    display: none;
 }
 
 /* 响应式 */

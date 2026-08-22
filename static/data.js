@@ -108,6 +108,101 @@ window.__APP_DATA__ = {
       "rcs_url": "http://192.168.110.101:portal",
       "note": "",
       "customer_name": "丹阳市致远塑件"
+    },
+    {
+      "id": 5,
+      "customer_id": 2,
+      "name": "唯德康智能仓储",
+      "code": "",
+      "supports_remote": 1,
+      "remote_software": "网易UU远程",
+      "remote_id": "767541153",
+      "remote_password": "J6RWX7SW",
+      "remote_status": "available",
+      "likes": 0,
+      "dislikes": 0,
+      "last_verified_at": null,
+      "created_at": "2026-08-22 15:38:41",
+      "updated_at": "2026-08-22 15:38:41",
+      "rcs_url": "",
+      "note": "",
+      "customer_name": "江苏唯德康"
+    },
+    {
+      "id": 6,
+      "customer_id": 1,
+      "name": "亚新科两台潜伏叉",
+      "code": "",
+      "supports_remote": 1,
+      "remote_software": "网易UU远程",
+      "remote_id": "917770262",
+      "remote_password": "SC123456",
+      "remote_status": "available",
+      "likes": 0,
+      "dislikes": 0,
+      "last_verified_at": null,
+      "created_at": "2026-08-22 15:39:26",
+      "updated_at": "2026-08-22 15:39:26",
+      "rcs_url": "",
+      "note": "",
+      "customer_name": "亚新科合金材料"
+    },
+    {
+      "id": 7,
+      "customer_id": 3,
+      "name": "澳弘A2立库",
+      "code": "",
+      "supports_remote": 1,
+      "remote_software": "网易UU远程",
+      "remote_id": "489139261",
+      "remote_password": "WEV15GAZ",
+      "remote_status": "available",
+      "likes": 0,
+      "dislikes": 0,
+      "last_verified_at": null,
+      "created_at": "2026-08-22 15:40:24",
+      "updated_at": "2026-08-22 15:40:24",
+      "rcs_url": "",
+      "note": "",
+      "customer_name": "常州澳弘电子"
+    },
+    {
+      "id": 8,
+      "customer_id": 7,
+      "name": "扬州二郎神叉车项目",
+      "code": "",
+      "supports_remote": 1,
+      "remote_software": "网易UU远程",
+      "remote_id": "279461205",
+      "remote_password": "9Y3ZJ3UA",
+      "remote_status": "available",
+      "likes": 0,
+      "dislikes": 0,
+      "last_verified_at": null,
+      "created_at": "2026-08-22 15:41:42",
+      "updated_at": "2026-08-22 15:43:27",
+      "rcs_url": "http://192.168.102.59:portal",
+      "note": "",
+      "customer_name": "扬州二郎神"
+    },
+    {
+      "id": 9,
+      "customer_id": 6,
+      "name": "小松新部品仓库",
+      "code": "",
+      "supports_remote": 1,
+      "remote_software": "网易UU远程",
+      "remote_id": "492246915",
+      "remote_password": "AD3Z3EHT",
+      "remote_status": "available",
+      "likes": 0,
+      "dislikes": 0,
+      "last_verified_at": null,
+      "created_at": "2026-08-22 15:42:29",
+      "updated_at": "2026-08-22 15:42:48",
+      "rcs_url": "http://192.168.238.202:portal",
+      "note": "",
+      "customer_name": "常州小松"
     }
   ],
   "histories": {
@@ -508,8 +603,81 @@ window.__APP_DATA__ = {
         "operator": "",
         "created_at": "2026-08-12 20:16:38"
       }
+    ],
+    "5": [
+      {
+        "id": 56,
+        "action": "create",
+        "old_value": "",
+        "new_value": "网易UU远程 | 767541153 | ",
+        "note": "创建项目",
+        "operator": "",
+        "created_at": "2026-08-22 15:38:41"
+      }
+    ],
+    "6": [
+      {
+        "id": 57,
+        "action": "create",
+        "old_value": "",
+        "new_value": "网易UU远程 | 917770262 | ",
+        "note": "创建项目",
+        "operator": "",
+        "created_at": "2026-08-22 15:39:26"
+      }
+    ],
+    "7": [
+      {
+        "id": 58,
+        "action": "create",
+        "old_value": "",
+        "new_value": "网易UU远程 | 489139261 | ",
+        "note": "创建项目",
+        "operator": "",
+        "created_at": "2026-08-22 15:40:24"
+      }
+    ],
+    "8": [
+      {
+        "id": 62,
+        "action": "update_remote",
+        "old_value": "网易UU远程 | 279461205 | ",
+        "new_value": "网易UU远程 | 279461205 | http://192.168.102.59:portal",
+        "note": "RCS地址 空→http://192.168.102.59:portal",
+        "operator": "",
+        "created_at": "2026-08-22 15:43:27"
+      },
+      {
+        "id": 59,
+        "action": "create",
+        "old_value": "",
+        "new_value": "网易UU远程 | 279461205 | ",
+        "note": "创建项目",
+        "operator": "",
+        "created_at": "2026-08-22 15:41:42"
+      }
+    ],
+    "9": [
+      {
+        "id": 61,
+        "action": "update_remote",
+        "old_value": "网易UU远程 | 492246915 | ",
+        "new_value": "网易UU远程 | 492246915 | http://192.168.238.202:portal",
+        "note": "RCS地址 空→http://192.168.238.202:portal",
+        "operator": "",
+        "created_at": "2026-08-22 15:42:48"
+      },
+      {
+        "id": 60,
+        "action": "create",
+        "old_value": "",
+        "new_value": "网易UU远程 | 492246915 | ",
+        "note": "创建项目",
+        "operator": "",
+        "created_at": "2026-08-22 15:42:29"
+      }
     ]
   },
   "readonly": true,
-  "generated_at": "2026-08-22T07:31:32.141Z"
+  "generated_at": "2026-08-22T07:48:59.934Z"
 };

@@ -7,7 +7,18 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div id="app">
+    <!-- 访问密码弹窗（部署后生效；本地 localhost 自动跳过，方便录入） -->
+    <div id="password-modal" class="pwd-modal">
+        <div class="pwd-modal-box">
+            <h3>远程项目记录</h3>
+            <p>请输入访问密码</p>
+            <input type="password" id="pwd-input" placeholder="密码" autocomplete="off">
+            <div id="pwd-error" class="pwd-error"></div>
+            <button id="pwd-submit" class="btn btn-primary">进入</button>
+        </div>
+    </div>
+
+    <div id="app" class="app-hidden">
         <!-- 顶部栏：品牌 -->
         <header class="app-header">
             <div class="brand">
@@ -224,6 +235,53 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <!-- 访问密码校验（本地 localhost 自动跳过） -->
+    <script>
+        (function () {
+            const CORRECT_PWD = 'SC123456';
+            const STORAGE_KEY = 'rmp_auth_ok';
+            const modal = document.getElementById('password-modal');
+            const app = document.getElementById('app');
+            const input = document.getElementById('pwd-input');
+            const submit = document.getElementById('pwd-submit');
+            const error = document.getElementById('pwd-error');
+
+            function unlock() {
+                modal.classList.add('hidden');
+                app.classList.remove('app-hidden');
+                try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+            }
+
+            function isLocalhost() {
+                return location.hostname === 'localhost' ||
+                       location.hostname === '127.0.0.1' ||
+                       location.hostname === '[::1]';
+            }
+
+            if (isLocalhost()) { unlock(); return; }
+            try {
+                if (sessionStorage.getItem(STORAGE_KEY) === '1') { unlock(); return; }
+            } catch (e) {}
+
+            function check() {
+                if (input.value === CORRECT_PWD) {
+                    unlock();
+                } else {
+                    error.textContent = '密码错误，请重试';
+                    input.value = '';
+                    input.focus();
+                }
+            }
+
+            submit.addEventListener('click', check);
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') check();
+            });
+            input.focus();
+        })();
+    </script>
+
     <!-- 烘焙数据：本地（localhost）运行时被忽略，部署到 Vercel 后作为只读快照 -->
     <script src="/data.js"></script>
     <script src="/js/app.js"></script>
