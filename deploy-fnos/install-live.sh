@@ -70,8 +70,8 @@ services:
       - PORT=5000
       - HOST=0.0.0.0
       - DB_PATH=/app/db/data.db
-      - AMAP_KEY=647068e81f445aeaebd6ec78b26070b3
-      - AMAP_SECURITY_JS_CODE=9550af49065c69e8bd9bb6b4422a316c
+      - AMAP_KEY=9550af49065c69e8bd9bb6b4422a316c
+      - AMAP_SECURITY_JS_CODE=647068e81f445aeaebd6ec78b26070b3
     ports:
       - "${PORT}:5000"
     volumes:
