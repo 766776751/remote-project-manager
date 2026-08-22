@@ -1,5 +1,5 @@
 # launcher.ps1
-# Find or auto-deploy Node.js, then run server.js.
+# Find or auto-deploy Node.js, then run lib/server.js.
 # All complex logic lives here (PowerShell 5.1 compatible, no PS7-only syntax).
 $ErrorActionPreference = 'Continue'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -79,4 +79,4 @@ Write-Host "[info] Starting service on port $port ..."
 Write-Host "        Local browser:  http://localhost:$port"
 Write-Host '        (Close this window to stop the service)'
 Write-Host '============================================================'
-& $node (Join-Path $root 'server.js')
+& $node (Join-Path $root 'lib' 'server.js')

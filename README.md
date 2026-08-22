@@ -36,7 +36,7 @@
 1. 脚本会自动检测系统是否已安装 Node.js（>= 22.5，需支持内置 `node:sqlite`）；
 2. 若未安装，将**自动从官网下载官方 Node 运行环境（ZIP 免安装）并解压部署到本地 `node-runtime/`**，无需管理员权限、不依赖微软商店；
 3. 无需执行 `npm install`（本程序零第三方依赖）；
-4. 自动以 `node server.js` 启动服务。
+4. 自动以 `node lib/server.js` 启动服务。
 
 启动成功后命令行会显示监听地址（默认 `http://0.0.0.0:5000`）。
 
@@ -45,7 +45,7 @@
 确保本机已安装 Node.js（>= 22.5，需支持内置 `node:sqlite`），然后在项目目录执行：
 
 ```bash
-node server.js
+node lib/server.js
 ```
 
 > 端口默认 `5000`，可在 `config.json` 的 `port` 字段修改；`host` 默认 `0.0.0.0`（允许局域网访问）。
@@ -102,7 +102,8 @@ cp config.example.json config.json
 
 ```
 remote-project-manager/
-├── server.js              # Node.js 后端（零依赖）：HTTP 服务 + SQLite + REST API
+├── lib/
+│   └── server.js          # Node.js 后端（零依赖）：HTTP 服务 + SQLite + REST API
 ├── config.example.json    # 配置模板（含占位符，进仓库）
 ├── config.json            # 本地配置（含真实 Key，不进仓库，由你自行创建）
 ├── package.json           # 项目配置（含 start 脚本）
@@ -142,7 +143,7 @@ Vercel 会自动识别：
 - `package.json` 中 `"engines": { "node": "24.x" }` 使用 Node.js 24 运行时（原生支持 `node:sqlite`）；
 - `npm run build` 会把 `static/` 复制到 `public/` 作为静态站点；
 - `vercel.json` 会把所有 `/api/*` 请求转发到 `api/index.js`；
-- API 函数复用 `server.js` 中的路由与数据库逻辑。
+- API 函数（`api/index.js`）复用 `lib/server.js` 中的路由与数据库逻辑。
 
 如果部署后首页正常但 API 报错 500，请在 Vercel Dashboard → 你的项目 → **Logs** → **Functions** 里查看具体错误信息。
 
@@ -164,7 +165,7 @@ cp config.example.json config.json
 
 # Windows：双击启动（会自动检测/下载部署 Node）
 start.bat
-# 或命令行：node server.js
+# 或命令行：node lib/server.js
 ```
 
 > 仓库内的 `db/data.db` 是**已清空的表结构模板**（不含任何真实数据），首次运行会自动用它初始化用户目录下的活动数据库。
@@ -214,4 +215,4 @@ A：出于保护考虑，列表页不显示验证码，需进入项目编辑 / �
 A：确认手机与电脑在同一 WiFi；使用电脑在局域网中的真实 IP（非 127.0.0.1）访问；并检查活动库路径所在目录未被占用锁死。
 
 **Q：双击 start.bat 提示端口被占用？**
-A：可能已有服务在运行（如之前手动启动过 `node server.js`）。先结束占用 5000 端口的 `node.exe` 进程，再双击启动。
+A：可能已有服务在运行（如之前手动启动过 `node lib/server.js`）。先结束占用 5000 端口的 `node.exe` 进程，再双击启动。

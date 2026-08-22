@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "description": "远程项目记录 - Node.js 版后端（零依赖，仅用 Node 内置模块）",
-  "main": "api/index.js",
+  "main": "lib/server.js",
   "engines": {
     "node": "24.x"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node lib/server.js",
     "build": "node scripts/vercel-build.js"
   }
 }
