@@ -79,4 +79,4 @@ Write-Host "[info] Starting service on port $port ..."
 Write-Host "        Local browser:  http://localhost:$port"
 Write-Host '        (Close this window to stop the service)'
 Write-Host '============================================================'
-& $node (Join-Path $root 'lib' 'server.js')
+& $node ([System.IO.Path]::Combine($root, 'lib', 'server.js'))
