@@ -38,11 +38,13 @@ for f in "lib/server.js" "package.json" "config.example.json"; do
   echo "    下载 $f"
   wget -q -O "$APP_DIR/$f" "$GH_BASE/$f" || { echo "    ❌ 下载 $f 失败，检查网络"; exit 1; }
 done
-# 前端
-for f in "static/index.html" "static/data.js" "static/css/style.css" "static/js/app.js"; do
+# 前端（注意：可编辑版不下载 data.js，避免前端进入只读模式）
+for f in "static/index.html" "static/css/style.css" "static/js/app.js"; do
   echo "    下载 $f"
   wget -q -O "$APP_DIR/$f" "$GH_BASE/$f" || { echo "    ❌ 下载 $f 失败，检查网络"; exit 1; }
 done
+# 确保 static/data.js 不存在（否则前端会判断为只读）
+rm -f "$APP_DIR/static/data.js"
 
 # 数据库：仅首次安装时拉取（更新代码不会覆盖已有数据）
 if [ ! -f "$APP_DIR/db/data.db" ]; then
