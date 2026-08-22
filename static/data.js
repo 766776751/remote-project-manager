@@ -123,9 +123,9 @@ window.__APP_DATA__ = {
       "dislikes": 0,
       "last_verified_at": null,
       "created_at": "2026-08-22 15:38:41",
-      "updated_at": "2026-08-22 15:38:41",
+      "updated_at": "2026-08-22 16:18:19",
       "rcs_url": "",
-      "note": "",
+      "note": "远程进入后必须是lk2的windows账号，密码为Lk@123321；如果无法远程请使用堡垒机：https://jumpserver.vedkang.com/，账号：lk2  密码：Lk@123321",
       "customer_name": "江苏唯德康"
     },
     {
@@ -199,7 +199,7 @@ window.__APP_DATA__ = {
       "dislikes": 0,
       "last_verified_at": null,
       "created_at": "2026-08-22 15:42:29",
-      "updated_at": "2026-08-22 15:42:48",
+      "updated_at": "2026-08-22 16:16:49",
       "rcs_url": "http://192.168.238.202:portal",
       "note": "",
       "customer_name": "常州小松"
@@ -679,5 +679,5 @@ window.__APP_DATA__ = {
     ]
   },
   "readonly": true,
-  "generated_at": "2026-08-22T07:58:16.387Z"
+  "generated_at": "2026-08-22T08:18:56.447Z"
 };
