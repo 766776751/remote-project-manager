@@ -122,6 +122,30 @@ remote-project-manager/
 > `node-runtime/`（自动下载的 Node 运行环境）、`remote-project-manager-data/`（活动数据库），
 > 这些均已被 `.gitignore` 排除，不会进入仓库。
 
+## 部署到 Vercel（在线访问）
+
+项目已适配 Vercel Serverless Functions，可直接部署获得公网访问地址。
+
+> ⚠️ **重要限制**：Vercel 的无服务器函数文件系统是临时的，SQLite 数据库只能写在 `/tmp` 里。这意味着新增 / 修改的数据在**重新部署或冷启动后会被清空**，仅适合演示或只读场景。如果需要真正持久化，请改用 Vercel Postgres / Neon / Supabase 等外部数据库。
+
+### 部署步骤
+
+1. 注册 / 登录 [Vercel](https://vercel.com)，进入 Dashboard；
+2. 点击 **Add New Project**，选择 `766776751/remote-project-manager` 仓库导入；
+3. 在 **Environment Variables** 中至少添加一项（如需使用地图搜索）：
+   - `AMAP_KEY` = 你的高德 Key
+   - `AMAP_SECURITY_JS_CODE` = 你的高德安全密钥（JS API 需要同时配置两项）
+4. 保持默认构建命令 `npm run build` 与输出目录 `public` 不变；
+5. 点击 **Deploy**。
+
+Vercel 会自动识别：
+- `package.json` 中 `"engines": { "node": "24.x" }` 使用 Node.js 24 运行时（原生支持 `node:sqlite`）；
+- `npm run build` 会把 `static/` 复制到 `public/` 作为静态站点；
+- `vercel.json` 会把所有 `/api/*` 请求转发到 `api/index.js`；
+- API 函数复用 `server.js` 中的路由与数据库逻辑。
+
+如果部署后首页正常但 API 报错 500，请在 Vercel Dashboard → 你的项目 → **Logs** → **Functions** 里查看具体错误信息。
+
 ## 从 GitHub 部署 / 克隆运行
 
 本项目已部署到 GitHub（私有仓库）：**https://github.com/766776751/remote-project-manager**

@@ -180,13 +180,14 @@ function seedFrom(srcPath, dstDb) {
 }
 
 async function openDatabase() {
-  // 活动库放在用户目录（WorkBuddy 文件监视器只盯工作区，不会锁定这里，
-  // 因此本机可正常读写；其他电脑同样没有该监视器，稳定运行）。
-  const live = path.join(os.homedir(), 'remote-project-manager-data', 'data.db');
+  // Vercel Serverless 只有 /tmp 可写，本地则放在用户目录避免工作区监视器加锁。
+  const live = process.env.VERCEL === '1'
+    ? path.join('/tmp', 'remote-project-manager-data.db')
+    : path.join(os.homedir(), 'remote-project-manager-data', 'data.db');
   LIVE_DB_PATH = live;
   const fb = await tryOpenReadWrite(live);
   fb.exec(SCHEMA); // 先建表，以便下方恢复数据/首次运行
-  // 若用户目录库为空（首次运行/换电脑），则从随文件夹带来、只读可读的工作区库恢复已有数据
+  // 若活动库为空（首次运行/换电脑/Vercel 冷启动），则从随仓库带来的种子库恢复数据
   seedFrom(DB_PATH, fb);
   return fb;
 }
@@ -664,33 +665,30 @@ async function handle(req, res) {
   }
 }
 
-// ---------- 启动 ----------
-async function main() {
-  try {
-    db = await openDatabase();
-    // 让写入在遇到文件监视器/索引器的只读锁时自动退避重试
-    const _prepare = db.prepare.bind(db);
-    // node:sqlite 不能绑定 undefined（会报 “cannot be bound”），统一兜底成 null
-    const scrub = (a) => (a === undefined ? null : a);
-    db.prepare = (sql) => {
-      const stmt = _prepare(sql);
-      const _run = stmt.run ? stmt.run.bind(stmt) : null;
-      if (_run) stmt.run = (...args) => tryWrite(() => _run(...args.map(scrub)));
-      const _get = stmt.get ? stmt.get.bind(stmt) : null;
-      if (_get) stmt.get = (...args) => _get(...args.map(scrub));
-      const _all = stmt.all ? stmt.all.bind(stmt) : null;
-      if (_all) stmt.all = (...args) => _all(...args.map(scrub));
-      return stmt;
-    };
-    const _exec = db.exec.bind(db);
-    db.exec = (sql) => tryWrite(() => _exec(sql));
-    initDb();
-    console.log(`[db] 数据库已就绪：${LIVE_DB_PATH}`);
-  } catch (e) {
-    console.error('[db] 初始化失败：', e.message);
-    process.exit(1);
-  }
+// ---------- 初始化与启动 ----------
+async function initDatabase() {
+  db = await openDatabase();
+  // 让写入在遇到文件监视器/索引器的只读锁时自动退避重试
+  const _prepare = db.prepare.bind(db);
+  // node:sqlite 不能绑定 undefined（会报 “cannot be bound”），统一兜底成 null
+  const scrub = (a) => (a === undefined ? null : a);
+  db.prepare = (sql) => {
+    const stmt = _prepare(sql);
+    const _run = stmt.run ? stmt.run.bind(stmt) : null;
+    if (_run) stmt.run = (...args) => tryWrite(() => _run(...args.map(scrub)));
+    const _get = stmt.get ? stmt.get.bind(stmt) : null;
+    if (_get) stmt.get = (...args) => _get(...args.map(scrub));
+    const _all = stmt.all ? stmt.all.bind(stmt) : null;
+    if (_all) stmt.all = (...args) => _all(...args.map(scrub));
+    return stmt;
+  };
+  const _exec = db.exec.bind(db);
+  db.exec = (sql) => tryWrite(() => _exec(sql));
+  initDb();
+  console.log(`[db] 数据库已就绪：${LIVE_DB_PATH}`);
+}
 
+function startHttpServer() {
   const server = http.createServer((req, res) => {
     handle(req, res).catch((e) => {
       console.error('[unhandled]', e);
@@ -715,4 +713,19 @@ async function main() {
   });
 }
 
-main();
+async function main() {
+  try {
+    await initDatabase();
+  } catch (e) {
+    console.error('[db] 初始化失败：', e.message);
+    process.exit(1);
+  }
+  startHttpServer();
+}
+
+// 本地运行时直接启动 HTTP 服务；Vercel / 其他平台通过 module.exports 使用 handler
+if (require.main === module) {
+  main();
+}
+
+module.exports = { initDatabase, handle };
