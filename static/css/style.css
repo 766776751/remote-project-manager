@@ -294,14 +294,22 @@ body {
     word-break: break-all;
     overflow-wrap: anywhere;
     min-width: 0;
-    padding: 4px 8px;
+    padding: 6px 8px;
+    line-height: 1.5;
+    border-radius: 4px;
 }
 
 /* rcs 网址独占整行，避免长链接把卡片撑宽 */
-.rc-line.rc-link-line { flex-direction: column; align-items: stretch; gap: 4px; }
+.rc-line.rc-link-line {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+}
 
 .rc-foot {
-    margin-top: auto;
+    margin-top: 12px;
     padding-top: 10px;
     border-top: 1px solid var(--border);
     display: flex;
