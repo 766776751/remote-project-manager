@@ -229,6 +229,8 @@ body {
     font-size: 13px;
     border-top: 1px solid var(--border);
     min-height: 36px;
+    min-width: 0;
+    gap: 8px;
 }
 
 .rc-label { color: var(--text-secondary); }
@@ -278,11 +280,14 @@ body {
 .rc-copy-url {
     font-size: 12px;
     white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
+    overflow: hidden;
+    text-overflow: ellipsis;
     width: 100%;
     flex: 1;
     text-align: left;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    min-width: 0;
 }
 
 .rc-foot {
@@ -296,11 +301,13 @@ body {
 }
 
 .rc-foot .btn-sm {
-    flex: 1 1 0;
+    flex: 0 0 calc(50% - 4px);
+    max-width: calc(50% - 4px);
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    justify-content: center;
 }
 
 /* 管理页双栏布局 */
