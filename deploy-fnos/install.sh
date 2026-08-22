@@ -46,6 +46,9 @@ for f in "${FILES[@]}"; do
   echo "    下载 $f"
   wget -q -O "$HTML_DIR/$f" "$RAW_BASE/$f" || { echo "    ❌ 下载 $f 失败，检查网络"; exit 1; }
 done
+echo "    修正文件权限，确保 Nginx 容器用户可读"
+chmod -R a+rX "$HTML_DIR"
+chmod a+r "$APP_DIR/nginx.conf" "$APP_DIR/docker-compose.yml" 2>/dev/null || true
 
 echo "==> [4/6] 写入 Nginx 配置"
 cat > "$APP_DIR/nginx.conf" <<'EOF'
