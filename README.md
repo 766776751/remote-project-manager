@@ -124,10 +124,14 @@ remote-project-manager/
 
 ## 从 GitHub 部署 / 克隆运行
 
-本项目已做好“可安全开源”准备：真实密钥（`config.json`）和真实业务数据均不进入仓库。
+本项目已部署到 GitHub（私有仓库）：**https://github.com/766776751/remote-project-manager**
+
+真实密钥（`config.json`）和真实业务数据均不进入仓库，可放心克隆运行。
+
+### 克隆并运行
 
 ```bash
-git clone <你的仓库地址>
+git clone git@github.com:766776751/remote-project-manager.git
 cd remote-project-manager
 
 # 配置高德 Key（任选：环境变量 / 复制 config.example.json 为 config.json 填写）
@@ -140,6 +144,26 @@ start.bat
 ```
 
 > 仓库内的 `db/data.db` 是**已清空的表结构模板**（不含任何真实数据），首次运行会自动用它初始化用户目录下的活动数据库。
+
+### 当前部署状态
+
+- 仓库地址：`git@github.com:766776751/remote-project-manager.git`（SSH）
+- 默认分支：`main`（已设上游跟踪 `origin/main`）
+- 最新提交：`e308cb1` 远程项目记录：纯 Node.js 零依赖后端 + 前端，一键自动部署 Node 环境
+- 已配置 SSH 部署密钥：`C:\Users\LQ\.ssh\id_ed25519`（公钥已添加到 GitHub，推送免密）
+
+### 后续更新代码
+
+本机修改代码后，按常规流程提交并推送即可：
+
+```bash
+git add -A
+git commit -m "改动说明"
+git push
+```
+
+> 首次推送需 GitHub 账号授权（SSH key 已配好，直接 `git push` 即可，无需密码）。
+> 若更换电脑，重新生成 SSH key 并把公钥添加到 GitHub 的 SSH keys 即可。
 
 ## 数据备份
 
