@@ -15,6 +15,9 @@ remote-project-manager-data/
 # ===== 迁移前备份（含旧业务数据） =====
 *.bak-prenode
 
+# ===== Vercel 构建输出 =====
+public/
+
 # ===== 系统 / 编辑器 =====
 .DS_Store
 Thumbs.db
