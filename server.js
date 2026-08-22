@@ -179,9 +179,12 @@ function seedFrom(srcPath, dstDb) {
   }
 }
 
+// 判断是否在 Vercel Serverless 环境（优先 VERCEL=1，再兜底 VERCEL_ENV）
+const IS_VERCEL = process.env.VERCEL === '1' || !!process.env.VERCEL_ENV;
+
 async function openDatabase() {
   // Vercel Serverless 只有 /tmp 可写，本地则放在用户目录避免工作区监视器加锁。
-  const live = process.env.VERCEL === '1'
+  const live = IS_VERCEL
     ? path.join('/tmp', 'remote-project-manager-data.db')
     : path.join(os.homedir(), 'remote-project-manager-data', 'data.db');
   LIVE_DB_PATH = live;

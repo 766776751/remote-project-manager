@@ -23,7 +23,7 @@ function ensureInit() {
   return initPromise;
 }
 
-module.exports = async (req, res) => {
+async function handler(req, res) {
   try {
     await ensureInit();
     await handle(req, res);
@@ -34,4 +34,7 @@ module.exports = async (req, res) => {
       res.end(JSON.stringify({ error: '服务器内部错误：' + (e.message || e) }));
     }
   }
-};
+}
+
+module.exports = handler;
+module.exports.default = handler;
