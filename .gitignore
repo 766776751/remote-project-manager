@@ -1,0 +1,23 @@
+# ===== 真实配置（含高德密钥），绝不进仓库 =====
+config.json
+
+# ===== 日志 =====
+*.log
+server.log
+start.log
+
+# ===== 自动下载部署的 Node 运行时（启动脚本会自行下载） =====
+node-runtime/
+
+# ===== 运行时用户数据目录（实际活动数据库，含真实业务数据） =====
+remote-project-manager-data/
+
+# ===== 迁移前备份（含旧业务数据） =====
+*.bak-prenode
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

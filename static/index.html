@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>远程项目记录</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部栏：品牌 -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="logo">远</span>
+                <span class="title">远程项目记录</span>
+            </div>
+        </header>
+
+        <div class="layout">
+        <main class="app-main">
+            <!-- 合并页：左 40% 远程码展示 + 右 60% 客户管理 -->
+            <section id="page-combined" class="page active">
+                <div class="combined-layout">
+                    <!-- 左 40%：远程码展示 -->
+                    <div class="panel remote-panel">
+                        <div class="section-title">
+                            <h3>远程码展示</h3>
+                            <div class="filters">
+                                <select id="home-filter-customer" onchange="renderHomeCards()">
+                                    <option value="">全部客户</option>
+                                </select>
+                                <select id="home-filter-status" onchange="renderHomeCards()">
+                                    <option value="">全部状态</option>
+                                    <option value="available">可用</option>
+                                    <option value="unavailable">不可用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="remote-grid" id="remote-cards"></div>
+                    </div>
+
+                    <!-- 右 60%：客户管理 -->
+                    <div class="manage-panel-wrap">
+                        <div class="section-title title-gray">
+                            <h3>客户管理</h3>
+                            <div class="title-actions">
+                                <button class="btn-title-action" onclick="exportBackup()">导出</button>
+                                <button class="btn-title-action" onclick="document.getElementById('backup-file').click()">导入</button>
+                                <button class="btn-title-action" onclick="showAllProjects()">显示所有项目</button>
+                            </div>
+                        </div>
+                        <input type="file" id="backup-file" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
+                        <div class="manage-layout">
+                            <!-- 客户列表 -->
+                            <div class="manage-panel customers-panel">
+                                <div class="panel-header">
+                                    <h3>客户地址</h3>
+                                    <button class="btn btn-sm btn-primary" onclick="openCustomerModal()">+ 新增</button>
+                                </div>
+                                <div class="search-box">
+                                    <input type="text" id="customer-search" placeholder="搜索客户..." oninput="filterCustomers()">
+                                </div>
+                                <div class="customer-list" id="customer-list"></div>
+                            </div>
+
+                            <!-- 项目列表 -->
+                            <div class="manage-panel projects-panel">
+                                <div class="panel-header">
+                                    <h3>关联项目</h3>
+                                    <button class="btn btn-sm btn-primary" onclick="openProjectModal()">+ 新增</button>
+                                </div>
+                                <div class="search-box">
+                                    <input type="text" id="project-search" placeholder="搜索项目..." oninput="filterProjects()">
+                                </div>
+                                <div class="panel-scroll project-table-scroll">
+                                    <table class="data-table compact" id="projects-table">
+                                        <thead>
+                                            <tr>
+                                                <th>项目</th>
+                                                <th>编号</th>
+                                                <th>软件</th>
+                                                <th>ID / 密码</th>
+                                                <th>状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="projects-tbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        </div>
+    </div>
+
+    <!-- 客户弹窗 -->
+    <div class="modal" id="customer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customer-modal-title">新增客户</h3>
+                <button class="close" onclick="closeCustomerModal()">&times;</button>
+            </div>
+            <form id="customer-form" onsubmit="saveCustomer(event)">
+                <input type="hidden" id="customer-id">
+                <div class="form-group">
+                    <label>客户名称 *</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>省份</label>
+                        <input type="text" id="customer-province">
+                    </div>
+                    <div class="form-group">
+                        <label>城市</label>
+                        <input type="text" id="customer-city">
+                    </div>
+                    <div class="form-group">
+                        <label>区县</label>
+                        <input type="text" id="customer-district">
+                    </div>
+                </div>
+                <div class="form-group" id="address-search-group" style="display:none;">
+                    <label>搜索地址（高德地图）</label>
+                    <input type="text" id="address-search" placeholder="输入地址...">
+                    <div id="amap-container" style="height:150px;margin-top:6px;border-radius:6px;"></div>
+                </div>
+                <div class="form-group" id="address-manual-group">
+                    <label>详细地址</label>
+                    <input type="text" id="customer-address" placeholder="手动填写">
+                </div>
+                <input type="hidden" id="customer-lng">
+                <input type="hidden" id="customer-lat">
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeCustomerModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 项目弹窗 -->
+    <div class="modal" id="project-modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="project-modal-title">新增项目</h3>
+                <button class="close" onclick="closeProjectModal()">&times;</button>
+            </div>
+            <form id="project-form" onsubmit="saveProject(event)">
+                <input type="hidden" id="project-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>所属客户 *</label>
+                        <select id="project-customer" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>项目名称 *</label>
+                        <input type="text" id="project-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>项目编号</label>
+                        <input type="text" id="project-code">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>支持远程</label>
+                        <select id="project-supports-remote" onchange="toggleRemoteFields()">
+                            <option value="0">不支持</option>
+                            <option value="1">支持</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>远程软件</label>
+                        <select id="project-remote-software">
+                            <option value="">请选择</option>
+                            <option value="网易UU远程">网易UU远程</option>
+                            <option value="ToDesk">ToDesk</option>
+                            <option value="向日葵">向日葵</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select id="project-remote-status">
+                            <option value="unknown">未验证</option>
+                            <option value="available">可用</option>
+                            <option value="unavailable">不可用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>远程数字码</label>
+                        <input type="text" id="project-remote-id" placeholder="设备ID">
+                    </div>
+                    <div class="form-group">
+                        <label>远程验证密码</label>
+                        <input type="text" id="project-remote-password" placeholder="验证码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>RCS网页服务地址</label>
+                    <input type="text" id="project-rcs-url" placeholder="http://192.168.x.x:8080">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="project-note" rows="4" placeholder="可选，可填写多行说明"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeProjectModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+            <div id="project-history-section" style="display:none;padding:14px 18px;border-top:1px solid var(--border);">
+                <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;">维护历史</div>
+                <div id="project-history-list" style="font-size:13px;max-height:160px;overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+    <script src="/js/app.js"></script>
+</body>
+</html>

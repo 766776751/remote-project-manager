@@ -1,0 +1,10 @@
+{
+  "name": "remote-project-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "远程项目记录 - Node.js 版后端（零依赖，仅用 Node 内置模块）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
