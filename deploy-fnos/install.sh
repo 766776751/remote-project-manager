@@ -9,7 +9,16 @@
 # ============================================================
 set -euo pipefail
 
+SELF_URL="https://raw.githubusercontent.com/766776751/remote-project-manager/main/deploy-fnos/install.sh"
 RAW_BASE="https://raw.githubusercontent.com/766776751/remote-project-manager/main/static"
+
+# ---- 自动提权：当前用户无法访问 Docker 守护进程时，尝试 sudo 重新执行 ----
+if ! docker info >/dev/null 2>&1; then
+  if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
+    echo "⚠️  当前用户无 Docker 权限，尝试通过 sudo 重新执行安装脚本..."
+    exec sudo bash -c "$(curl -fsSL "$SELF_URL")" "$@"
+  fi
+fi
 APP_DIR="/vol1/@appshare/remote-project-manager"
 HTML_DIR="$APP_DIR/html"
 PORT="8088"
