@@ -186,8 +186,15 @@ body {
     border-radius: var(--radius);
     padding: 16px;
     min-height: 280px;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: box-shadow 0.15s;
 }
+
+/* 防止任何子元素（长 URL / 长备注）把卡片撑爆 */
+.remote-card * { min-width: 0; box-sizing: border-box; }
 
 .remote-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -223,7 +230,7 @@ body {
 
 .rc-line {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     padding: 8px 0;
     font-size: 13px;
@@ -231,11 +238,12 @@ body {
     min-height: 36px;
     min-width: 0;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .rc-label { color: var(--text-secondary); }
-.rc-val { color: var(--text); font-weight: 500; word-break: break-all; }
-.rc-val.note { white-space: pre-wrap; flex: 1; text-align: right; }
+.rc-val { color: var(--text); font-weight: 500; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
+.rc-val.note { white-space: pre-wrap; flex: 1; text-align: right; overflow-wrap: anywhere; word-break: break-word; }
 
 #project-note {
     width: 100%;
@@ -278,20 +286,22 @@ body {
 .rc-copy:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
 
 .rc-copy-url {
+    display: block;
+    width: 100%;
+    text-align: left;
     font-size: 12px;
     white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    flex: 1;
-    text-align: left;
     word-break: break-all;
     overflow-wrap: anywhere;
     min-width: 0;
+    padding: 4px 8px;
 }
 
+/* rcs 网址独占整行，避免长链接把卡片撑宽 */
+.rc-line.rc-link-line { flex-direction: column; align-items: stretch; gap: 4px; }
+
 .rc-foot {
-    margin-top: 12px;
+    margin-top: auto;
     padding-top: 10px;
     border-top: 1px solid var(--border);
     display: flex;
