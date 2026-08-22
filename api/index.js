@@ -2,39 +2,10 @@
 
 /**
  * Vercel Serverless Function 入口
- * 复用 server.js 的逻辑，避免重复实现。
+ * 直接复用 server.js 的默认 handler，避免二次包装导致导出失效。
  */
 
-const { initDatabase, handle } = require('../server.js');
+const serverHandler = require('../server.js');
 
-let initPromise = null;
-let initDone = false;
-
-function ensureInit() {
-  if (initDone) return Promise.resolve();
-  if (!initPromise) {
-    initPromise = initDatabase()
-      .then(() => { initDone = true; })
-      .catch((e) => {
-        initPromise = null;
-        throw e;
-      });
-  }
-  return initPromise;
-}
-
-async function handler(req, res) {
-  try {
-    await ensureInit();
-    await handle(req, res);
-  } catch (e) {
-    console.error('[vercel error]', e);
-    if (!res.headersSent) {
-      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ error: '服务器内部错误：' + (e.message || e) }));
-    }
-  }
-}
-
-module.exports = handler;
-module.exports.default = handler;
+module.exports = serverHandler;
+module.exports.default = serverHandler;

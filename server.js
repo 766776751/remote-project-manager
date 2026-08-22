@@ -691,6 +691,22 @@ async function initDatabase() {
   console.log(`[db] 数据库已就绪：${LIVE_DB_PATH}`);
 }
 
+// 供 Vercel / 其他平台调用：确保数据库只初始化一次
+let initPromise = null;
+let initDone = false;
+async function ensureInit() {
+  if (initDone) return;
+  if (!initPromise) {
+    initPromise = initDatabase()
+      .then(() => { initDone = true; })
+      .catch((e) => {
+        initPromise = null;
+        throw e;
+      });
+  }
+  return initPromise;
+}
+
 function startHttpServer() {
   const server = http.createServer((req, res) => {
     handle(req, res).catch((e) => {
@@ -726,9 +742,26 @@ async function main() {
   startHttpServer();
 }
 
-// 本地运行时直接启动 HTTP 服务；Vercel / 其他平台通过 module.exports 使用 handler
+// Vercel / 其他平台入口：默认导出一个 handler 函数
+async function vercelHandler(req, res) {
+  try {
+    await ensureInit();
+    await handle(req, res);
+  } catch (e) {
+    console.error('[vercel error]', e);
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: '服务器内部错误：' + (e.message || e) }));
+    }
+  }
+}
+
+module.exports = vercelHandler;
+module.exports.default = vercelHandler;
+module.exports.initDatabase = initDatabase;
+module.exports.handle = handle;
+
+// 本地运行时直接启动 HTTP 服务；被 Vercel require 时走上面的 handler
 if (require.main === module) {
   main();
 }
-
-module.exports = { initDatabase, handle };
